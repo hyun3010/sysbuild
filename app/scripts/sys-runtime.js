@@ -68,24 +68,25 @@ window.SysRuntime = (function () {
             }
         }.bind(this);
 
-        var MackeTerm = require('MackeTerm');
+        var LinuxTerm = require('LinuxTerm');
         var Jor1k = require('Jor1k');
-        var termTTY0 = new MackeTerm('tty0');
-        var termTTY1 = new MackeTerm('tty1');
+        var termTTY0 = new LinuxTerm('tty0');
+        var termTTY1 = new LinuxTerm('tty1');
 
         var jor1kparameters = {
             system: {
                 kernelURL: 'vmlinux.bin.bz2', // kernel image
                 memorysize: 32, // in MB, must be a power of two
                 cpu: 'asm', // short name for the cpu to use
-                ncores: 1
+				arch: 'or1k',
+				ncores: 1
             },
 
             fs: {
-                basefsURL: 'basefs-compile.json', // json file with the basic filesystem configuration.
+                basefsURL: 'basefs.json', // json file with the basic filesystem configuration.
                 // json file with extended filesystem informations. Loaded after the basic filesystem has been loaded.
-                extendedfsURL: 'http://cs-education.github.io/sysassets/jor1kfs/sysroot/fs.json',
-                earlyload: [
+                extendedfsURL: '../fs.json',
+				earlyload: [
                     'usr/bin/gcc',
                     'usr/libexec/gcc/or1k-linux-musl/4.9.0/cc1',
                     'usr/libexec/gcc/or1k-linux-musl/4.9.0/collect2',
@@ -100,7 +101,7 @@ window.SysRuntime = (function () {
             terms: [termTTY0, termTTY1],   // canvas ids for the terminals
             statsid: 'vm-stats',  // element id for displaying VM statistics
             memorysize: 32, // in MB, must be a power of two
-            path: '../jor1k/bin/'
+            path: '../sys/or1k/' // jor1k/bin
         };
 
         this.jor1kgui = new Jor1k(jor1kparameters);
