@@ -360,6 +360,12 @@ module.exports = function (grunt) {
                     src: ['**', '!.git'],
                     dest: '<%= config.dist %>/jor1k/'
                 }, {
+					expand:true,
+					dot: true,
+					cwd: '<%= config.app &>/jor1k-sysroot',
+					src: ['**', '!.git'],
+					dest: '<%= config.dist %>/jor1k-sysroot'
+				}, {
                     expand: true,
                     dot: true,
                     cwd: './sys-gh-pages-config/',
@@ -387,8 +393,17 @@ module.exports = function (grunt) {
                     cwd: 'bower_components/jor1k/',
                     src: ['**', '!.git'],
                     dest: '<%= config.app %>/jor1k/'
-                }]
-            }
+				}]
+            },
+			'jor1k-sysroot': {
+				files: [{
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/jor1k-sysroot/',
+					src: ['**', '!.git'],
+					dest: '<%= config.app %>/jor1k-sysroot/'
+				}]	
+			}
         },
 
         // Generates a custom Modernizr build that includes only the tests you
@@ -436,8 +451,15 @@ module.exports = function (grunt) {
                         cb();
                     }
                 }
-            }
-        },
+            },
+			
+
+			// jor1k compile call 
+			compileJor1k: {
+				command: '(cd <%= config.app %>/jor1k;bash compile)' 
+			},
+			
+		},
 
         includes: {
         }
@@ -500,7 +522,7 @@ module.exports = function (grunt) {
         'build'
     ]);
 
-    grunt.registerTask('setupJor1k', ['copy:jor1k']);
+    grunt.registerTask('setupJor1k', ['copy:jor1k', 'copy:jor1k-sysroot', 'shell:compileJor1k']);
 
     grunt.registerTask('writeBuildStamps',
         'Create files in the build directory with build info (date, changes, etc.)', function () {
