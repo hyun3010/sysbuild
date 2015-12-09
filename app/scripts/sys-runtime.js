@@ -58,7 +58,8 @@ window.SysRuntime = (function () {
 
         var onTTY0Login = function (completed) {
             if (completed) {
-                this.sendKeys('tty0', 'stty -clocal crtscts -ixoff\necho boot2ready-$?\n', 'boot2ready-0', onTTY0Ready);
+				// snapshot version initial commands
+                this.sendKeys('tty0', '/bin/busybox --install -s\nstty -clocal crtscts -ixoff\necho boot2ready-$?\nclear\npwd\n', 'boot2ready-0', onTTY0Ready);
             }
         }.bind(this);
 
@@ -76,7 +77,9 @@ window.SysRuntime = (function () {
         var jor1kparameters = {
             system: {
                 kernelURL: 'vmlinux.bin.bz2', // kernel image
-                memorysize: 32, // in MB, must be a power of two
+				snapshotHeapURL : 'snapshot.bin', // snapshot image // remove this if you don't want snapshot boot 
+                snapshotDevURL : 'snapshot.json',
+				memorysize: 32, // in MB, must be a power of two
                 cpu: 'asm', // short name for the cpu to use
 				arch: 'or1k',
 				ncores: 1
@@ -87,7 +90,7 @@ window.SysRuntime = (function () {
                 // json file with extended filesystem informations. Loaded after the basic filesystem has been loaded.
                 extendedfsURL: '../fs.json',
 				earlyload: [
-                    'usr/bin/gcc',
+					'usr/bin/gcc',
                     'usr/libexec/gcc/or1k-linux-musl/4.9.0/cc1',
                     'usr/libexec/gcc/or1k-linux-musl/4.9.0/collect2',
                     'usr/lib/libbfd-2.24.51.20140817.so',
@@ -107,6 +110,8 @@ window.SysRuntime = (function () {
         this.jor1kgui = new Jor1k(jor1kparameters);
         termTTY0.SetCharReceiveListener(this.putCharTTY0Listener);
         termTTY1.SetCharReceiveListener(this.putCharTTY1Listener);
+	
+		window.tempJor1k = this.jor1kgui;
 
         // Wait for terminal prompts
         this.sendKeys('tty0', '', '~ $', onTTY0Login);
